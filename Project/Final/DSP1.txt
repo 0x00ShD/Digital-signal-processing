@@ -1,0 +1,41 @@
+import numpy as np
+import wave
+import matplotlib.pyplot as plt
+
+# Task 1: Generate and save a 1-second audio signal
+duration = 1.0  # Duration of the audio signal in seconds
+sampling_rate = 44100  # Number of samples per second (standard for audio)
+t = np.linspace(0, duration, int(duration * sampling_rate), endpoint=False)
+frequency = 440  # Frequency of the audio signal in Hz (A4 note)
+amplitude = 0.3  # Amplitude of the audio signal
+
+audio_signal = amplitude * np.sin(2 * np.pi * frequency * t)
+
+# Save the audio signal as a WAV file
+output_file = "my_name.wav"
+with wave.open(output_file, "wb") as wav_file:
+    wav_file.setnchannels(1)  # Mono audio
+    wav_file.setsampwidth(2)  # 2 bytes per sample (16-bit)
+    wav_file.setframerate(sampling_rate)
+    wav_file.writeframes((audio_signal * 32767).astype(np.int16))
+
+# Task 2: Apply FFT and plot the magnitude spectrum
+fft_result = np.fft.fft(audio_signal)
+magnitude_spectrum = np.abs(fft_result)
+frequencies = np.fft.fftfreq(len(fft_result), 1 / sampling_rate)
+
+plt.plot(frequencies, magnitude_spectrum)
+plt.xlabel('Frequency (Hz)')
+plt.ylabel('Magnitude')
+plt.title('Magnitude Spectrum')
+plt.show()
+
+# Task 3: Apply inverse FFT and compare with the original audio
+reconstructed_signal = np.fft.ifft(fft_result).real
+
+# Generate the original audio back correctly for comparison
+original_audio = (audio_signal * 32767).astype(np.int16)
+
+# Listen to the original and reconstructed audio (requires external software)
+# You can use libraries like `sounddevice` or `pydub` to play the audio
+
